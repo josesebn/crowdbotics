@@ -42,11 +42,13 @@ jobs:
       - name: Run npm install
         run: npm install express
 
+      - name: Create Resource Group
+        run: az group create --name acrRg1 --location eastus
+
       - name: Create Azure Container Registry
         run: |
-            az group create --name acrRG --location eastus
-            az group wait --name acrRG --created
-            az acr create --resource-group acrRG --name myacr --sku Basic
+            az group wait --name acrRg1 --created
+            az acr create --resource-group acrRg1 --name myacr --sku Basic
 
       - name: Docker Build the App
         run: docker build -t hello-world-app:latest .
