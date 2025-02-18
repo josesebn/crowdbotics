@@ -53,6 +53,11 @@ jobs:
 
       - name: Apply Terraform
         run: terraform apply -auto-approve -var subscription_id=${{ env.AZURE_SUBSCRIPTION_ID }} -var tenant_id=${{ env.AZURE_TENANT_ID }} -var client_id=${{ env.AZURE_CLIENT_ID }} -var client_secret=${{ env.AZURE_CLIENT_SECRET }}
+
+    
+      - name: Get Service URL
+        run: |
+          kubectl get svc hello-world-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
         working-directory: ./terraform
 
       - name: Security Scan with Trivy
