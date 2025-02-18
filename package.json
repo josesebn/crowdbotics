@@ -1,0 +1,14 @@
+{
+  "name": "crowdbotics",
+  "version": "1.0.0",
+  "description": "`Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`\r ## Install minikube\r `choco install minikube`\r ## Start cluster\r `minikube start`\r ## Validate cluster\r `minikube status`\r `kubectl cluster-info`",
+  "main": "webapp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

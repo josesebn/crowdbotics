@@ -1,0 +1,44 @@
+name: Build and Deploy
+on:
+    workflow_dispatch:
+        inputs:
+            subscription_id:
+                description: 'Subscription ID'
+                required: true
+            tenant_id:
+                description: 'Tenant ID'
+                required: true
+            client_id:
+                description: 'Client ID'
+                required: true
+            client_secret:
+                description: 'Client Secret'
+                required: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: build
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v1
+
+        - name: Initialize Terraform
+          run: terraform init
+
+        - name: Plan Terraform
+          run: terraform plan -var subscription_id=${{ github.event.inputs.subscription_id }} -var tenant_id=${{ github.event.inputs.tenant_id }} -var client_id=${{ github.event.inputs.client_id }} -var client_secret=${{ github.event.inputs.client_secret }}
+
+        - name: Apply Terraform
+          run: terraform apply -auto-approve -var subscription_id=${{ github.event.inputs.subscription_id }} -var tenant_id=${{ github.event.inputs.tenant_id }} -var client_id=${{ github.event.inputs.client_id }} -var client_secret=${{ github.event.inputs.client_secret }}
