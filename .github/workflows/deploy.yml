@@ -33,7 +33,8 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Install Azure CLI
-        uses: azure/CLI@v1
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
       - name: Azure CLI Login
         run: az login --service-principal -u ${{ inputs.client_id }} -p ${{ inputs.client_secret }} --tenant ${{ inputs.tenant_id }}
@@ -48,3 +49,11 @@ jobs:
       - name: Apply Terraform
         run: terraform apply -auto-approve -var subscription_id=${{ inputs.subscription_id }} -var tenant_id=${{ inputs.tenant_id }} -var client_id=${{ inputs.client_id }} -var client_secret=${{ inputs.client_secret }}
         working-directory: ./terraform
+
+      - name: Security Scan with Trivy
+        uses: aquasecurity/trivy-action@v0.2.0
+        with:
+          image-ref: hello-world-app:latest
+
+      - name: Rollback Deployment
+        run: kubectl rollout undo deployment/hello-world-app
