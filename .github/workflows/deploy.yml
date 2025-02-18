@@ -45,7 +45,8 @@ jobs:
       - name: Create Azure Container Registry
         run: |
             az group create --name acrRG --location eastus
-            az acr create --resource-group myResourceGroup --name myacr --sku Basic
+            az group wait --name acrRG --created
+            az acr create --resource-group acrRG --name myacr --sku Basic
 
       - name: Docker Build the App
         run: docker build -t hello-world-app:latest .
@@ -62,7 +63,7 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-        
+
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./terraform
