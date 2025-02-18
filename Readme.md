@@ -27,5 +27,7 @@ In the provider.tf file change the values for azurerm according to match above n
 `terraform apply -auto-approve`
 
 ### Pipelines
-
+1. Go to Github Actions:https://github.com/josesebn/crowdbotics/actions/workflows/deploy.yml
+2. Now click Run Workflow and provide input varaibles `subscription_id` `client_id` `tenant_id` `client_secret`
+3. Click run workflow
 
