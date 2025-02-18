@@ -14,7 +14,11 @@ on:
             client_secret:
                 description: 'Client Secret'
                 required: true
-
+env:
+    AZURE_CLIENT_ID: "${{ inputs.client_id }}"
+    AZURE_CLIENT_SECRET: "${{ inputs.client_secret }}"
+    AZURE_TENANT_ID: "${{ inputs.tenant_id }}"
+    AZURE_SUBSCRIPTION_ID: "${{ inputs.subscription_id }}"
 jobs:
     deploy:
       runs-on: ubuntu-latest
@@ -37,17 +41,18 @@ jobs:
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
       - name: Azure CLI Login
-        run: az login --service-principal -u ${{ inputs.client_id }} -p ${{ inputs.client_secret }} --tenant ${{ inputs.tenant_id }}
+        run: |
+          az login --service-principal -u ${{ env.AZURE_CLIENT_ID}} -p ${{ env.AZURE_CLIENT_SECRET}} --tenant ${{ env.AZURE_TENANT_ID }}
 
       - name: Set Azure Subscription
-        run: az account set --subscription ${{ inputs.subscription_id }}
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./terraform
 
       - name: Apply Terraform
-        run: terraform apply -auto-approve -var subscription_id=${{ inputs.subscription_id }} -var tenant_id=${{ inputs.tenant_id }} -var client_id=${{ inputs.client_id }} -var client_secret=${{ inputs.client_secret }}
+        run: terraform apply -auto-approve -var subscription_id=${{ env.AZURE_SUBSCRIPTION_ID }} -var tenant_id=${{ env.AZURE_TENANT_ID }} -var client_id=${{ env.AZURE_CLIENT_ID }} -var client_secret=${{ env.AZURE_CLIENT_SECRET }}
         working-directory: ./terraform
 
       - name: Security Scan with Trivy
