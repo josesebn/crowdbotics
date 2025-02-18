@@ -14,6 +14,7 @@ on:
             client_secret:
                 description: 'Client Secret'
                 required: true
+            
 env:
     AZURE_CLIENT_ID: "${{ inputs.client_id }}"
     AZURE_CLIENT_SECRET: "${{ inputs.client_secret }}"
@@ -27,15 +28,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run npm install
-        run: npm install express
-
-      - name: Docker Build the App
-        run: docker build -t hello-world-app:latest .
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-
       - name: Install Azure CLI
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -47,6 +39,30 @@ jobs:
       - name: Set Azure Subscription
         run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Run npm install
+        run: npm install express
+
+      - name: Create Azure Container Registry
+        run: |
+            az group create --name acrRG --location eastus
+            az acr create --resource-group myResourceGroup --name myacr --sku Basic
+
+      - name: Docker Build the App
+        run: docker build -t hello-world-app:latest .
+        
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name myacr
+
+      - name: Tag Docker Image
+        run: docker tag hello-world-app:latest myacr.azurecr.io/hello-world-app:latest
+
+      - name: Push Docker Image to ACR
+        run: docker push myacr.azurecr.io/hello-world-app:latest
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./terraform

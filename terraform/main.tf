@@ -51,13 +51,16 @@ resource "kubernetes_deployment" "main" {
         }
       }
       spec {
+        # image_pull_secrets {
+        #   name = kubernetes_secret.acr_secret.metadata.0.name
+        # }
         container {
           name  = "hello-world-app"
-          image = "hello-world-app:latest"
+          image = "myacr.azurecr.io/hello-world-app:latest"
           port {
             container_port = 3000
           }
-          image_pull_policy = "IfNotPresent"
+          image_pull_policy = "Always"       
           resources {
             limits = {
               cpu    = "0.5"
