@@ -16,29 +16,35 @@ on:
                 required: true
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-
-        steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-
     deploy:
-        runs-on: ubuntu-latest
-        needs: build
+      runs-on: ubuntu-latest
 
-        steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-        - name: Setup Terraform
-          uses: hashicorp/setup-terraform@v1
+      - name: Run npm install
+        run: npm install express
 
-        - name: Initialize Terraform
-          run: terraform init
+      - name: Docker Build the App
+        run: docker build -t hello-world-app:latest .
 
-        - name: Plan Terraform
-          run: terraform plan -var subscription_id=${{ github.event.inputs.subscription_id }} -var tenant_id=${{ github.event.inputs.tenant_id }} -var client_id=${{ github.event.inputs.client_id }} -var client_secret=${{ github.event.inputs.client_secret }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-        - name: Apply Terraform
-          run: terraform apply -auto-approve -var subscription_id=${{ github.event.inputs.subscription_id }} -var tenant_id=${{ github.event.inputs.tenant_id }} -var client_id=${{ github.event.inputs.client_id }} -var client_secret=${{ github.event.inputs.client_secret }}
+      - name: Install Azure CLI
+        uses: azure/CLI@v1
+
+      - name: Azure CLI Login
+        run: az login --service-principal -u ${{ inputs.client_id }} -p ${{ inputs.client_secret }} --tenant ${{ inputs.tenant_id }}
+
+      - name: Set Azure Subscription
+        run: az account set --subscription ${{ inputs.subscription_id }}
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./terraform
+
+      - name: Apply Terraform
+        run: terraform apply -auto-approve -var subscription_id=${{ inputs.subscription_id }} -var tenant_id=${{ inputs.tenant_id }} -var client_id=${{ inputs.client_id }} -var client_secret=${{ inputs.client_secret }}
+        working-directory: ./terraform
