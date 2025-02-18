@@ -55,7 +55,7 @@ jobs:
         
       - name: Login to Azure Container Registry
         run: |
-          az acr login --name myacr
+          az acr login --name myacrcrowdbotics
 
       - name: Tag Docker Image
         run: docker tag hello-world-app:latest myacrcrowdbotics.azurecr.io/hello-world-app:latest
