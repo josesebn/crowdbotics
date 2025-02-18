@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "main" {
         # }
         container {
           name  = "hello-world-app"
-          image = "myacr.azurecr.io/hello-world-app:latest"
+          image = "myacrcrowdbotics.azurecr.io/hello-world-app:latest"
           port {
             container_port = 3000
           }
