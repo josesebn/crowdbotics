@@ -19,7 +19,7 @@ resource "azurerm_user_assigned_identity" "uai" {
 }
 
 resource "azurerm_role_assignment" "acr_pull_permission" {
-  scope                = "/subscriptions/${var.subscription_id}"
+  scope                = "/subscriptions/${var.subscription_id}/resourceGroups/acrRg1testjose/providers/Microsoft.ContainerRegistry/registries/myacrcrowdbotics"
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.uai.principal_id
 }
@@ -46,7 +46,7 @@ resource "azurerm_kubernetes_cluster" "myaks" {
 resource "azurerm_role_assignment" "acr_pull_permission" {
   depends_on = [azurerm_kubernetes_cluster.myaks]
 
-  scope                            =  var.container_registery_scope
+  scope                            =  "/subscriptions/${var.subscription_id}/resourceGroups/acrRg1testjose/providers/Microsoft.ContainerRegistry/registries/myacrcrowdbotics"
   role_definition_name             = "AcrPull"
   principal_id                     = azurerm_kubernetes_cluster.myaks.kubelet_identity[0].object_id
   skip_service_principal_aad_check = true
