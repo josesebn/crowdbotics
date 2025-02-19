@@ -3,6 +3,10 @@
   resource_group_name = "acrRg1testjose"
 }
 
+# data azurerm_subscription "primary" {
+#   subscription_id = var.subscription_id
+# }
+
 resource "azurerm_resource_group" "rg" {
    name     = "aks-resource-group"
    location = "eastus"
@@ -15,7 +19,7 @@ resource "azurerm_user_assigned_identity" "uai" {
 }
 
 resource "azurerm_role_assignment" "acr_pull_permission" {
-  scope                = data.azurerm_container_registry.acr.id
+  scope                = var.subscription_id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.uai.principal_id
 }
