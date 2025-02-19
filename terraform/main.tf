@@ -1,4 +1,4 @@
-  data "azure_container_registry" "acr" {
+  data "azurerm_container_registry" "acr" {
   name                = "myacrcrowdbotics"
   resource_group_name = "acrRg1testjose"
 }
@@ -38,12 +38,7 @@ resource "azurerm_kubernetes_cluster" "myaks" {
    }
  }
 
- provider "kubernetes" {
-  host = azurerm_kubernetes_cluster.myaks.kube_config.0.host
-  client_certificate = base64decode(azurerm_kubernetes_cluster.myaks.kube_config.0.client_certificate)
-  client_key = base64decode(azurerm_kubernetes_cluster.myaks.kube_config.0.client_key)
-  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.myaks.kube_config.0.cluster_ca_certificate)
-}
+
 
 resource "kubernetes_deployment" "main" {
   depends_on = [azurerm_kubernetes_cluster.myaks]
