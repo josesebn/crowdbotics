@@ -82,7 +82,7 @@ resource "kubernetes_deployment" "main" {
           port {
             container_port = 3000
           }
-          image_pull_policy = "Always"       
+          image_pull_policy = "IfNotPresent"       
           resources {
             limits = {
               cpu    = "0.5"
