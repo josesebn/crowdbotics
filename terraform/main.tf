@@ -18,7 +18,7 @@ resource "azurerm_user_assigned_identity" "uai" {
   name                = "myaksidentity"
 }
 
-resource "azurerm_role_assignment" "acr_pull_permission" {
+resource "azurerm_role_assignment" "acr_pull_uai" {
   scope                = "/subscriptions/${var.subscription_id}/resourceGroups/acrRg1testjose/providers/Microsoft.ContainerRegistry/registries/myacrcrowdbotics"
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.uai.principal_id
