@@ -19,7 +19,7 @@ resource "azurerm_user_assigned_identity" "uai" {
 }
 
 resource "azurerm_role_assignment" "acr_pull_permission" {
-  scope                = var.subscription_id
+  scope                = "/subscriptions/${var.subscription_id}"
   role_definition_name = "AcrPull"
   principal_id         = azurerm_user_assigned_identity.uai.principal_id
 }
