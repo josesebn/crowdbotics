@@ -40,7 +40,7 @@ jobs:
         run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: Assign Role Assignment 
-        run: az role assignment create --role "User Access Administrator" --assignee ${{ env.AZURE_CLIENT_ID }} --scope /subscriptions/<${{ env.AZURE_SUBSCRIPTION_ID }}
+        run: az role assignment create --role "User Access Administrator" --assignee ${{ env.AZURE_CLIENT_ID }} --scope /subscriptions/${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: Run npm install
         run: npm install express
