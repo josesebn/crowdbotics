@@ -1,9 +1,26 @@
-  resource "azurerm_resource_group" "rg" {
+  data "azure_container_registry" "acr" {
+  name                = "myacrcrowdbotics"
+  resource_group_name = "acrRg1testjose"
+}
+
+resource "azurerm_resource_group" "rg" {
    name     = "aks-resource-group"
    location = "eastus"
  }
 
- resource "azurerm_kubernetes_cluster" "myaks" {
+resource "azurerm_user_assigned_identity" "uai" {
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  name                = "myaksidentity"
+}
+
+resource "azurerm_role_assignment" "acr_pull_permission" {
+  scope                = data.azure_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.uai.principal_id
+}
+
+resource "azurerm_kubernetes_cluster" "myaks" {
    name                = "TestAKSCluster"
    location            = azurerm_resource_group.rg.location
    resource_group_name = azurerm_resource_group.rg.name
@@ -16,7 +33,8 @@
    }
 
    identity {
-     type = "SystemAssigned"
+     type = "UserAssigned"
+     identity_ids = ([azurerm_user_assigned_identity.uai.id])
    }
  }
 
@@ -26,7 +44,6 @@
   client_key = base64decode(azurerm_kubernetes_cluster.myaks.kube_config.0.client_key)
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.myaks.kube_config.0.cluster_ca_certificate)
 }
-
 
 resource "kubernetes_deployment" "main" {
   depends_on = [azurerm_kubernetes_cluster.myaks]
@@ -51,9 +68,7 @@ resource "kubernetes_deployment" "main" {
         }
       }
       spec {
-        # image_pull_secrets {
-        #   name = kubernetes_secret.acr_secret.metadata.0.name
-        # }
+
         container {
           name  = "hello-world-app"
           image = "myacrcrowdbotics.azurecr.io/hello-world-app:latest"
